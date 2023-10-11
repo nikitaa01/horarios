@@ -1,10 +1,16 @@
-import { Horarios } from "@/@types/horario"
 import type { CollapseProps } from 'antd'
 import { Collapse } from 'antd'
 import MonthStatsHeader from "./MonthStatsHeader"
 import WeekStatsRoot from "./WeekStatsRoot"
 
-export default function Stats({ horarios }: { horarios: Horarios }) {
+interface HorariosWithTotalHoras {
+    [month: string]: {
+        total_horas: number;
+        [week: string]: any;
+    }
+}
+
+export default function Stats({ horarios }: { horarios: HorariosWithTotalHoras }) {
     if (Object.keys(horarios).length < 1) return null
     const items: CollapseProps['items'] = Object.entries(horarios).map(([month, { total_horas, ...weeks }]) => ({
         key: month,

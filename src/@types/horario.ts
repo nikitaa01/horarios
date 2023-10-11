@@ -12,6 +12,6 @@ type Horarios = {
             total_horas: number
         }
     } & { total_horas: number }
-}
+} | any
 
 export type { Horario, Horarios }
