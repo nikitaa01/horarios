@@ -1,6 +1,7 @@
 import AddDayForm from "@/components/AddDayForm"
 import EditJSONModal from "@/components/EditJSONModal"
 import Stats from "@/components/Stats"
+import "./home.css"
 
 import horarios from "@/data/horarios.json"
 
