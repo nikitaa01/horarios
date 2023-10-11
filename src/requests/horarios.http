@@ -1,0 +1,8 @@
+POST http://localhost:3000/api/horarios
+Content-Type: application/json
+
+{
+    "fecha": "11/12/2002",
+    "hora_inicio": "12:21",
+    "hora_fin": "20:12"
+}
