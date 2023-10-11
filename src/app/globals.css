@@ -2,15 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+[type=button],
+[type=reset],
+[type=submit],
+button {
+  background-color: #1677ff !important;
+
+}
+
 :where(.css-dev-only-do-not-override-amq5gd).ant-btn-primary {
   color: #fff;
   background-color: #1677ff !important;
   box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
 }
+
 :where(.css-dev-only-do-not-override-amq5gd).ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
   color: #fff;
   background-color: #4096ff !important;
 }
+
 :where(.css-dev-only-do-not-override-amq5gd).ant-btn-primary:disabled,
 :where(.css-dev-only-do-not-override-amq5gd).ant-btn-primary.ant-btn-disabled {
   cursor: not-allowed;
