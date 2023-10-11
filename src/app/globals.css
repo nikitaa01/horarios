@@ -5,7 +5,7 @@
 [type=button],
 [type=reset],
 [type=submit],
-button {
+button.ant-btn-primary {
   background-color: #1677ff !important;
 
 }
