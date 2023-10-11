@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
 import { Horario, Horarios } from "@/@types/horario"
-import { writeFile } from 'fs/promises'
-import zod from 'zod'
 import horariosJSON from '@/data/horarios.json'
+import { writeFile } from 'fs/promises'
+import { NextRequest, NextResponse } from "next/server"
+import zod from 'zod'
 
 const horarios: Horarios = horariosJSON
 
@@ -73,7 +73,8 @@ export async function POST(req: NextRequest) {
     try {
         await writeFile(`${process.cwd()}/src/data/horarios.json`, JSON.stringify(horarios))
     } catch (error) {
-        return NextResponse.json({ ok: false, error: 'No se han podido actualizar los datos' })
+        console.log(error)
+        return NextResponse.json({ ok: false, error: 'No se han podido actualizar los datos', error2: error })
     }
     return NextResponse.json({ ok: true })
 }
