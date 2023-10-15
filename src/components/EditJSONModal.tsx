@@ -1,10 +1,10 @@
 'use client'
 
-import { FloatButton, Drawer, Button, message } from "antd"
+import { Button, Drawer, FloatButton, message } from "antd"
 import TextArea from "antd/es/input/TextArea"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import Image from "next/image"
 
 export default function EditJSONModal() {
     const [open, setOpen] = useState(false)
@@ -18,7 +18,7 @@ export default function EditJSONModal() {
         fetch('/api/horarios')
             .then(res => res.json())
             .then(res => {
-                setJsonInput(JSON.stringify(res, null, 4))
+                setJsonInput(JSON.stringify(res.data, null, 4))
             })
     }, [reload])
 

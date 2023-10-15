@@ -1,4 +1,4 @@
-POST http://localhost:3000/api/horarios
+POST http://localhost:3000/api/test
 Content-Type: application/json
 
 {

@@ -1,30 +1,15 @@
 import { Horario, Horarios } from "@/@types/horario"
-import horariosJSON from '@/data/horarios.json'
-import { writeFile } from 'fs/promises'
+import dbQuery from "@/utils/dbQuery"
+import getHoursDifference from "@/utils/getHoursdifference"
+import revalidateTotalHoras from "@/utils/revalidateTotalHoras"
 import { NextRequest, NextResponse } from "next/server"
 import zod from 'zod'
 
-const horarios: Horarios = horariosJSON
 
-export function GET() {
+export async function GET() {
+    const horarios = await dbQuery(c => c.findOne({})) as Horarios
+    delete horarios?.data?._id
     return NextResponse.json(horarios)
-}
-
-function calcularDiferenciaDeHoras(horaInicio: string, horaFinal: string) {
-    if (+horaFinal.split(':')[0] < 4) {
-        horaFinal = `${+horaFinal.split(':')[0] + 24}:${horaFinal.split(':')[1]}`
-    }
-    const [horaInicioHoras, horaInicioMinutos] = horaInicio.split(':')
-    const [horaFinalHoras, horaFinalMinutos] = horaFinal.split(':')
-
-    const inicioEnMinutos = parseInt(horaInicioHoras) * 60 + parseInt(horaInicioMinutos)
-    const finalEnMinutos = parseInt(horaFinalHoras) * 60 + parseInt(horaFinalMinutos)
-
-    const diferenciaEnMinutos = finalEnMinutos - inicioEnMinutos
-
-    const diferenciaEnHoras = diferenciaEnMinutos / 60
-
-    return diferenciaEnHoras
 }
 
 function getWeekIndex(fecha: Date) {
@@ -35,6 +20,7 @@ function getWeekIndex(fecha: Date) {
 }
 
 export async function POST(req: NextRequest) {
+    const horarios = await dbQuery(c => c.findOne({})) as Horarios
     let newHorario: { horario: Horario }
     try {
         newHorario = await req.json() as { horario: Horario }
@@ -52,7 +38,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: false, error: JSON.parse(validated.error.message) })
     }
 
-    const total_horas = calcularDiferenciaDeHoras(validated.data.hora_inicio, validated.data.hora_fin)
+    const total_horas = getHoursDifference(validated.data.hora_inicio, validated.data.hora_fin)
 
     const [day, month, year] = validated.data.fecha.split('/')
     const monthSelector = `${month}/${year}`
@@ -71,29 +57,12 @@ export async function POST(req: NextRequest) {
     horarios[monthSelector][weekSelector].days.push({ ...validated.data, total_horas })
 
     try {
-        await writeFile(`${process.cwd()}/src/data/horarios.json`, JSON.stringify(horarios))
+        await dbQuery(c => c.updateOne({}, { $set: horarios }))
     } catch (error) {
         console.log(error)
         return NextResponse.json({ ok: false, error: 'No se han podido actualizar los datos', error2: error })
     }
     return NextResponse.json({ ok: true })
-}
-
-const revalidateTotalHoras = (horarios: Horarios) => {
-    for (const month in horarios) {
-        horarios[month].total_horas = 0
-        if (month === 'total_horas') continue
-        for (const week in horarios[month]) {
-            if (week === 'total_horas') continue
-            horarios[month][week].total_horas = 0
-            for (const day of horarios[month][week].days) {
-                day.total_horas = calcularDiferenciaDeHoras(day.hora_inicio, day.hora_fin)
-                horarios[month][week].total_horas += day.total_horas
-            }
-            horarios[month].total_horas += horarios[month][week].total_horas
-        }
-    }
-    return horarios
 }
 
 export async function PUT(req: NextRequest) {
@@ -106,7 +75,7 @@ export async function PUT(req: NextRequest) {
     if (!newHorarios) return NextResponse.json({ ok: false, error: 'No se recibieron datos' }, { status: 400 })
     newHorarios = revalidateTotalHoras(newHorarios)
     try {
-        await writeFile(`${process.cwd()}/src/data/horarios.json`, JSON.stringify(newHorarios))
+        await dbQuery(c => c.updateOne({}, { $set: newHorarios }))
     } catch (error) {
         return NextResponse.json({ ok: false, error: 'No se han podido actualizar los datos' })
     }

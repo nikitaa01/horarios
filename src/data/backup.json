@@ -11,7 +11,7 @@
                 {
                     "fecha": "8/10/2023",
                     "hora_inicio": "18:30",
-                    "hora_fin": "2:0",
+                    "hora_fin": "02:00",
                     "total_horas": 7.5
                 }
             ],
@@ -34,18 +34,18 @@
                 {
                     "fecha": "13/10/2023",
                     "hora_inicio": "12:30",
-                    "hora_fin": "17:30",
-                    "total_horas": 5
+                    "hora_fin": "18:00",
+                    "total_horas": 5.5
                 },
                 {
                     "fecha": "14/10/2023",
-                    "hora_inicio": "18:30",
+                    "hora_inicio": "15:30",
                     "hora_fin": "0:0",
-                    "total_horas": 5.5
+                    "total_horas": 8.5
                 }
             ],
-            "total_horas": 22.25
+            "total_horas": 25.75
         },
-        "total_horas": 37.75
+        "total_horas": 41.25
     }
 }
