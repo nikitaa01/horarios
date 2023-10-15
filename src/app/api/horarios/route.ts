@@ -20,7 +20,9 @@ function getWeekIndex(fecha: Date) {
 }
 
 export async function POST(req: NextRequest) {
-    const horarios = await dbQuery(c => c.findOne({})) as Horarios
+    const getHorarios = await dbQuery(c => c.findOne({})) as Horarios
+    const horarios = getHorarios?.data ?? { total_horas: 0 }
+    delete horarios._id
     let newHorario: { horario: Horario }
     try {
         newHorario = await req.json() as { horario: Horario }
