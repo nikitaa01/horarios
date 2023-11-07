@@ -1,22 +1,18 @@
-import { Horarios } from "@/@types/horario"
 import AddDayForm from "@/components/AddDayForm"
-import EditJSONModal from "@/components/EditJSONModal"
-import Stats from "@/components/Stats"
-import dbQuery from "@/utils/dbQuery"
+import HorariosRoot from "@/components/HorariosRoot"
+import StatsLoading from "@/components/StatsLoading"
+import { Suspense } from "react"
 import "./home.css"
 
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-    const { data: horarios } = await dbQuery(c => c.findOne({})) as Horarios
-    delete horarios._id
     return (
         <>
-            <div>
-                <AddDayForm />
-                <Stats horarios={horarios} />
-            </div>
-            <EditJSONModal />
+            <AddDayForm />
+            <Suspense fallback={<StatsLoading />}>
+                <HorariosRoot />
+            </Suspense>
         </>
     )
 }

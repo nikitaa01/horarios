@@ -8,7 +8,6 @@ const dbQuery = async (callback: (collection: Collection<Document>) => Promise<a
     const res = { ok: false, data: null }
     try {
         await client.connect()
-        console.log('Conectado a la base de datos')
 
         const db = client.db('db_horarios')
         const collection = db.collection('horarios')

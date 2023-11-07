@@ -1,7 +1,7 @@
 'use client'
 
-import { DatePicker, Form, TimePicker, Button, message } from "antd"
 import { saveDay } from "@/services/horarios"
+import { Button, DatePicker, Form, TimePicker, message } from "antd"
 import { useRouter } from "next/navigation"
 
 type AddDayFormFields = {
@@ -65,7 +65,7 @@ export default function AddDayForm() {
                     <TimePicker format="HH:mm" style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit">Add Day</Button>
+                    <Button type="primary" htmlType="submit">Guardar</Button>
                 </Form.Item>
             </Form>
         </>
