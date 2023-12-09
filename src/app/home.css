@@ -21,3 +21,7 @@
 .ant-collapse .ant-collapse-content>.ant-collapse-content-box:has(table) {
     padding: 0 !important;
 }
+
+.ant-picker-time-panel-cell-disabled {
+    display: none;
+}

@@ -58,6 +58,14 @@ export async function POST(req: NextRequest) {
     horarios[monthSelector][weekSelector].total_horas += total_horas
     horarios[monthSelector][weekSelector].days.push({ ...validated.data, total_horas })
 
+    horarios[monthSelector][weekSelector].days.sort((a: any, b: any) => {
+        const [dayA, monthA, yearA] = a.fecha.split('/')
+        const [dayB, monthB, yearB] = b.fecha.split('/')
+        const dateA = new Date(+yearA, +monthA - 1, +dayA)
+        const dateB = new Date(+yearB, +monthB - 1, +dayB)
+        return dateA.getTime() - dateB.getTime()
+    })
+
     try {
         await dbQuery(c => c.updateOne({}, { $set: horarios }))
     } catch (error) {

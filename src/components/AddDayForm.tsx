@@ -10,6 +10,8 @@ type AddDayFormFields = {
     hora_fin?: { $H: number, $m: number }
 }
 
+// TODO: hacer un mensaje mietras se esta haciendo la peticion
+
 export default function AddDayForm() {
     const [messageApi, contextHolder] = message.useMessage()
     const { refresh } = useRouter()
@@ -19,7 +21,9 @@ export default function AddDayForm() {
         const fechaString = `${fecha.$D}/${fecha.$M + 1}/${fecha.$y}`
         const horaInicioString = `${hora_inicio.$H}:${hora_inicio.$m}`
         const horaFinString = `${hora_fin.$H}:${hora_fin.$m}`
+        const hideLoadingMessage = messageApi.loading('Guardando jornada...')
         const res = await saveDay({ fecha: fechaString, hora_inicio: horaInicioString, hora_fin: horaFinString })
+        hideLoadingMessage()
         if (res.ok) {
             messageApi.success('Jornada guardada correctamente')
             refresh()
@@ -55,14 +59,14 @@ export default function AddDayForm() {
                     name="hora_inicio"
                     rules={[{ required: true, message: 'Por favor introduce la hora de entrada' }]}
                 >
-                    <TimePicker format="HH:mm" style={{ width: '100%' }} />
+                    <TimePicker disabledTime={() => ({ disabledHours: () => [3, 4, 5, 6, 7, 8, 9, 10, 11] })} minuteStep={15} format="HH:mm" style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item
                     label="Hora de salida"
                     name="hora_fin"
                     rules={[{ required: true, message: 'Por favor introduce la hora de salida' }]}
                 >
-                    <TimePicker format="HH:mm" style={{ width: '100%' }} />
+                    <TimePicker disabledTime={() => ({ disabledHours: () => [3, 4, 5, 6, 7, 8, 9, 10, 11] })} minuteStep={15} format="HH:mm" style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit">Guardar</Button>

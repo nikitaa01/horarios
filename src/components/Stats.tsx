@@ -1,5 +1,6 @@
 import type { CollapseProps } from 'antd'
 import { Collapse } from 'antd'
+import InitHorariosStore from "./InitHorariosStore"
 import MonthStatsHeader from "./MonthStatsHeader"
 import WeekStatsRoot from "./WeekStatsRoot"
 
@@ -19,8 +20,11 @@ export default function Stats({ horarios }: { horarios: HorariosWithTotalHoras }
     }))
 
     return (
-        <div>
-            <Collapse items={items} />
-        </div>
+        <>
+            <InitHorariosStore horarios={horarios} />
+            <div>
+                <Collapse items={items} />
+            </div>
+        </>
     )
 }

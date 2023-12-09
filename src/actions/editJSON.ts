@@ -3,7 +3,7 @@
 import dbQuery from "@/utils/dbQuery"
 import revalidateTotalHoras from "@/utils/revalidateTotalHoras"
 
-const actionEditJSON = async (_prevState: any, formData: FormData) => {
+const actionEditJSON = async (_: any, formData: FormData) => {
   const jsonStr = formData.get('json')
   if (!jsonStr)
     return { status: false }

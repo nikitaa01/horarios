@@ -7,10 +7,13 @@ export const dynamic = 'force-dynamic'
 
 export default async function HorariosRoot() {
   const { data: horarios } = await dbQuery(c => c.findOne({})) as Horarios
+  if (!horarios) {
+    return null
+  }
   delete horarios._id
   return (
     <>
-      <div>
+      <div className="pb-[10vh]">
         <Stats horarios={horarios} />
       </div>
       <EditJSONModal json={JSON.stringify(horarios, null, 6)} />
