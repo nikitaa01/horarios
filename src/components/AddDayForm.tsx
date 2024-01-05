@@ -1,6 +1,6 @@
 'use client'
 
-import { saveDay } from "@/services/horarios"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Button, DatePicker, Form, TimePicker, message } from "antd"
 import { useRouter } from "next/navigation"
 
@@ -10,9 +10,8 @@ type AddDayFormFields = {
     hora_fin?: { $H: number, $m: number }
 }
 
-// TODO: hacer un mensaje mietras se esta haciendo la peticion
-
 export default function AddDayForm() {
+    const supabase = createClientComponentClient()
     const [messageApi, contextHolder] = message.useMessage()
     const { refresh } = useRouter()
 
@@ -22,13 +21,23 @@ export default function AddDayForm() {
         const horaInicioString = `${hora_inicio.$H}:${hora_inicio.$m}`
         const horaFinString = `${hora_fin.$H}:${hora_fin.$m}`
         const hideLoadingMessage = messageApi.loading('Guardando jornada...')
-        const res = await saveDay({ fecha: fechaString, hora_inicio: horaInicioString, hora_fin: horaFinString })
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user || !user.id) {
+            hideLoadingMessage()
+            messageApi.error('No estas logueado')
+            return
+        }
+        const newDay = { fecha: fechaString, hora_inicio: horaInicioString, hora_fin: horaFinString, user_id: user.id }
+        const res = await supabase.from('horarios').insert([newDay])
         hideLoadingMessage()
-        if (res.ok) {
+        if (!res.error) {
             messageApi.success('Jornada guardada correctamente')
             refresh()
         } else {
-            messageApi.error('Error al guardar la jornada')
+            const { status } = res
+            let message = 'Error al guardar la jornada'
+            if (status === 409) message = 'Ya existe una jornada con esta fecha (puedes modificarla en la tabla)'
+            messageApi.error(message)
         }
     }
 

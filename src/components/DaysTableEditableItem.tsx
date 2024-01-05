@@ -1,14 +1,12 @@
 'use client'
 
-import { Horarios } from "@/@types/horario"
 import useEditingFlied from "@/store/editingFlied"
-import useHorarios from "@/store/horarios"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Button, message } from "antd"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-export default function DaysTableEditableItem({ text, fecha, fieldName }: { text: string, fecha: string, fieldName: 'fecha' | 'hora_inicio' | 'hora_fin' }) {
-  const horarios = useHorarios(state => state.horarios)
+export default function DaysTableEditableItem({ text, fecha, fieldName, id }: { text: string, fecha: string, fieldName: 'fecha' | 'hora_inicio' | 'hora_fin', id: string }) {
   const editing = useEditingFlied(state => state.editingFlied)
   const setEditing = useEditingFlied(state => state.setEditingFlied)
   const fieldId = JSON.stringify({ fecha, fieldName })
@@ -19,28 +17,14 @@ export default function DaysTableEditableItem({ text, fecha, fieldName }: { text
     'hora_fin': /^\d{1,2}:\d{1,2}$/,
   }
 
-  const getHorariosWithUpdatedField = (value: string): Horarios => {
-    const horariosCopy = JSON.parse(JSON.stringify(horarios))
-    for (const month in horariosCopy) {
-      for (const day in horariosCopy[month]) {
-        const days = horariosCopy[month][day].days || []
-        for (const currentDay of days) {
-          if (currentDay.fecha === fecha) {
-            currentDay[fieldName] = value
-          }
-        }
-      }
-    }
-    return horariosCopy
-  }
-
   const setToEditing = () => setEditing(fieldId)
   const setToNoEditing = () => setEditing(false)
 
   return (
     editing === fieldId
       ? <EditingItem
-        getHorariosWithUpdatedField={getHorariosWithUpdatedField}
+        id={id}
+        fieldName={fieldName}
         setToNoEditing={setToNoEditing}
         defaultValue={text}
         pattern={fieldsRegexPatterns[fieldName]}
@@ -64,10 +48,11 @@ const NoEditingItem = ({ children, setToEditing }: { children: JSX.Element | str
   </button>
 }
 
-const EditingItem = ({ setToNoEditing, defaultValue, getHorariosWithUpdatedField, pattern }: { setToNoEditing: () => void, defaultValue: string, getHorariosWithUpdatedField: (value: string) => Horarios, pattern: RegExp }) => {
+const EditingItem = ({ setToNoEditing, defaultValue, pattern, fieldName, id }: { setToNoEditing: () => void, defaultValue: string, pattern: RegExp, fieldName: string, id: string }) => {
   const [value, setValue] = useState(defaultValue)
   const [error, setError] = useState(false)
   const [messageApi, contextHolder] = message.useMessage()
+  const supabase = createClientComponentClient()
   const { refresh } = useRouter()
 
   let errorTimeout: NodeJS.Timeout
@@ -82,23 +67,13 @@ const EditingItem = ({ setToNoEditing, defaultValue, getHorariosWithUpdatedField
       messageApi.error('El valor del campo no cumple con los requisitos')
       return
     }
-    const horarios = getHorariosWithUpdatedField(value)
     let hideLoadingMessage: (() => void) | undefined
-    try {
-      hideLoadingMessage = messageApi.loading('Actualizando el campo')
-      const resApi = await fetch('/api/horarios', {
-        method: 'PUT',
-        body: JSON.stringify(horarios)
-      })
-      const apiJson = await resApi.json() as { ok: boolean }
-      if (!apiJson.ok) {
-        messageApi.error('Error al actualizar el campo')
-        return
-      }
-    } catch {
+    hideLoadingMessage = messageApi.loading('Actualizando el campo')
+    const res = await supabase.from('horarios').update({ [fieldName]: value }).eq('id', id)
+    hideLoadingMessage && hideLoadingMessage()
+    if (res.error) {
       messageApi.error('Error al actualizar el campo')
-    } finally {
-      hideLoadingMessage && hideLoadingMessage()
+      return
     }
     message.success('Campo actualizado correctamente')
     refresh()
@@ -130,7 +105,7 @@ const EditingItem = ({ setToNoEditing, defaultValue, getHorariosWithUpdatedField
 
 const SaveEditingControls = ({ setToNoEditing, error }: { setToNoEditing: () => void, error: boolean }) => {
   return (
-    <div className="fixed h-[12vh] top-[88vh] left-0 z-50 w-full pointer-events-none [&>*]:pointer-events-auto">
+    <div className="fixed h-[12dvh] top-[88dvh] left-0 z-50 w-full pointer-events-none [&>*]:pointer-events-auto">
       <div
         className="grid grid-cols-2 place-content-center gap-8 max-w-[478px] mx-auto bg-white rounded-lg shadow p-4 border"
       >

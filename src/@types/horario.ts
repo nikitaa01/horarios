@@ -3,6 +3,7 @@ type Horario = {
     hora_inicio: string,
     hora_fin: string,
     total_horas: number,
+    id: string
 }
 
 type Horarios = {

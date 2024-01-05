@@ -7,35 +7,49 @@ import DaysTableEditableItem from "./DaysTableEditableItem"
 import Pencil from "./icons/Pencil"
 
 export default function DaysTable({ days }: { days: Horario[] }) {
+  const onCellDescanso = ({ horas }: { horas: number }) => {
+    if (horas === 0) {
+      return {
+        colSpan: 0
+      }
+    }
+    return {}
+  }
+
   const columns: ColumnsType<{
     key: string;
     fecha: string;
     entrada: string;
     salida: string;
     horas: number;
+    id: string;
   }> = [
       {
         title: <EditableColumnLabel>Fecha</EditableColumnLabel>,
         dataIndex: 'fecha',
         key: 'fecha',
-        render: (text: string, { key }) => <DaysTableEditableItem text={text} fecha={key} fieldName="fecha" />,
+        onCell: ({ horas }: { horas: number }) => ({ colSpan: horas === 0 ? 4 : 1 }),
+        render: (text: string, { key, horas, id }) => horas === 0 ? <div className="relative w-full">{text} <div className="absolute inset-0 w-full text-center">Descanso</div></div> : <DaysTableEditableItem id={id} text={text} fecha={key} fieldName="fecha" />,
       },
       {
         title: <EditableColumnLabel>Entrada</EditableColumnLabel>,
         dataIndex: 'entrada',
         key: 'entrada',
-        render: (text: string, { key }) => <DaysTableEditableItem text={text} fecha={key} fieldName="hora_inicio" />,
+        onCell: onCellDescanso,
+        render: (text: string, { key, id }) => <DaysTableEditableItem id={id} text={text} fecha={key} fieldName="hora_inicio" />,
       },
       {
         title: <EditableColumnLabel>Salida</EditableColumnLabel>,
         dataIndex: 'salida',
         key: 'salida',
-        render: (text: string, { key }) => <DaysTableEditableItem text={text} fecha={key} fieldName="hora_fin" />,
+        render: (text: string, { key, id }) => <DaysTableEditableItem id={id} text={text} fecha={key} fieldName="hora_fin" />,
+        onCell: onCellDescanso
       },
       {
         title: 'Horas',
         dataIndex: 'horas',
         key: 'horas',
+        onCell: onCellDescanso
       },
     ]
 
@@ -44,12 +58,13 @@ export default function DaysTable({ days }: { days: Horario[] }) {
     return `${day}/${month}`
   }
 
-  const data = days.map(({ fecha, hora_fin, hora_inicio, total_horas }) => ({
+  const data = days.map(({ fecha, hora_fin, hora_inicio, total_horas, id }) => ({
     key: fecha,
     fecha: simplifyFecha(fecha),
     entrada: hora_inicio,
     salida: hora_fin,
     horas: total_horas,
+    id
   }))
 
   return (
