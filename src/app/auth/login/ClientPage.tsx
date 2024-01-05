@@ -3,7 +3,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 export default function ClientPage({ url }: { url: string }) {
   const supabase = createClientComponentClient()
-  console.log(url)
   const handleSingInGithub = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'github',
