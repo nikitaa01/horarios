@@ -15,5 +15,5 @@ export async function GET(request: NextRequest) {
 
   console.log(process.env.LOCAL_URL)
 
-  return NextResponse.redirect(process.env.LOCAL_URL!)
+  return NextResponse.redirect('https://horarios-nikita.vercel.app')
 }
