@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession()
 
   if (session === null) {
-    return NextResponse.redirect(`${process.env.LOCAL_URL}/auth/login`)
+    return NextResponse.redirect(`${process.env.LOCAL_URL ?? 'http://localhost:3000'}/auth/login`)
   }
 
   return NextResponse.next()
