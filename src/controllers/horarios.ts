@@ -2,7 +2,7 @@ import { Horarios } from "@/@types/horario"
 import getHoursDifference from "@/utils/getHoursdifference"
 import getWeekIndex from "@/utils/getWeekIndex"
 import getWholeWeekFromDate from "@/utils/getWholeWeekFromDate"
-import { SupabaseClient } from "@supabase/supabase-js"
+import { type SupabaseClient } from "@supabase/auth-helpers-nextjs"
 
 const formatHorarios = async (supabase: SupabaseClient<any, "public", any>) => {
   const { data: horarios } = await supabase.from('horarios').select('*')
