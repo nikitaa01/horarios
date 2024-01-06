@@ -1,4 +1,5 @@
 import { formatHorarios } from "@/controllers/horarios"
+import { AntdRegistry } from "@ant-design/nextjs-registry"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import Stats from "./Stats"
@@ -14,9 +15,10 @@ export default async function HorariosRoot() {
   return (
     <>
       <div className="pb-[10vh]">
-        <Stats horarios={horarios} />
+        <AntdRegistry >
+          <Stats horarios={horarios} />
+        </AntdRegistry>
       </div>
-      {/* <EditJSONModal json={JSON.stringify(horarios, null, 6)} /> */}
     </>
   )
 }

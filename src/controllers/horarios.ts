@@ -4,7 +4,7 @@ import getWeekIndex from "@/utils/getWeekIndex"
 import getWholeWeekFromDate from "@/utils/getWholeWeekFromDate"
 import { SupabaseClient } from "@supabase/supabase-js"
 
-const formatHorarios = async (supabase: SupabaseClient) => {
+const formatHorarios = async (supabase: SupabaseClient<any, "public", any>) => {
   const { data: horarios } = await supabase.from('horarios').select('*')
 
   if (!horarios) return {}
